@@ -1,23 +1,35 @@
 import 'dart:collection';
 import 'dart:io';
 import 'dart:math';
+import 'package:string_validator/string_validator.dart';
 
 void main(){
-  current currObj = current();
-  currObj.randomNumber();
-  while (true){
-    print("Level ${currObj.level} , Multiplier ${currObj.multiplier}: Guess a number between 0 and ${currObj.max}");
-    var user_input = stdin.readLineSync();
-    bool result = currObj.guess(int.parse(user_input));
-    if (result){
-      currObj.randomNumber();
-    }else {
-      if (currObj.life == 0) {
-        break;
+  try {
+    var currObj = current();
+    currObj.randomNumber();
+    while (true) {
+      print('Level ${currObj.level} , Multiplier ${currObj
+          .multiplier}: Guess a number between 0 and ${currObj.max}');
+      var user_input = stdin.readLineSync();
+      if (user_input.isNotEmpty && isNumeric(user_input)) {
+        var result = currObj.guess(int.parse(user_input));
+        if (result) {
+          currObj.randomNumber();
+        } else {
+          if (currObj.life == 0) {
+            break;
+          }
+        }
+      }else{
+        print ('"${user_input}" is not a valid input for this program');
       }
     }
+    print('Oh No! You lose at level ${currObj.level} ');
+    print ('ScoreBoard------------------------------------------------------');
+    currObj.score_board.forEach((key, value) => print('${key} ${value}'));
+  }catch(e){
+    print('Error has thrown with message ${e}');
   }
-  print('Oh No! You lose at level ${currObj.level} ');
 }
 
 class data{
@@ -48,9 +60,9 @@ class current extends data{
       }
       return false;
     }
+    super.score_board.addAll({super.level : super.life});
     super.level++;
     super.points += super.level * super.life * super.multiplier;
-    super.score_board.addAll({super.level : super.life});
     print ('You guess correctly [current points: ${super.points}]');
     if (super.points > super.multiplier * 50){
       super.points -= super.multiplier * 100;
@@ -60,8 +72,3 @@ class current extends data{
     return true;
   }
 }
-
-
-
-
-
